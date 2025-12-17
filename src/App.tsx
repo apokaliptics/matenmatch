@@ -78,6 +78,16 @@ function AppContent() {
     }
   }, [isLoggedIn, currentScreen]);
 
+  // Auto-login if a remembered email exists
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    if (rememberedEmail) {
+      setCurrentUser(prev => ({ ...prev, email: rememberedEmail }));
+      setIsLoggedIn(true);
+      updateLoginStreak();
+    }
+  }, []);
+
   // Update login streak
   const updateLoginStreak = () => {
     const today = new Date().toISOString().split('T')[0];
@@ -409,6 +419,12 @@ function AppContent() {
     setShowProfile(true);
   };
 
+  // Logout helper that also clears remembered login
+  const handleLogout = () => {
+    localStorage.removeItem('rememberedEmail');
+    setIsLoggedIn(false);
+  };
+
   if (!isLoggedIn) {
     if (authScreen === 'login') {
       return (
@@ -509,7 +525,7 @@ function AppContent() {
               className="h-full"
             >
               <Settings 
-                onLogout={() => setIsLoggedIn(false)} 
+                onLogout={handleLogout} 
                 currentUser={currentUser}
                 onUpdateProfile={handleUpdateProfile}
                 onViewProfile={handleViewOwnProfile}
@@ -533,13 +549,13 @@ function AppContent() {
 
       {/* Bottom Navigation */}
       <nav className="bg-white border-t border-gray-200 sticky bottom-0 z-40">
-        <div className="max-w-md mx-auto pl-1 pr-6 py-3">
-          <div className="flex items-center justify-evenly">
+        <div className="max-w-md mx-auto px-6 py-3">
+          <div className="flex items-center justify-center gap-3">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentScreen('discover')}
-              className={`flex flex-col items-center gap-1 py-2 px-5 rounded-xl transition-colors ${
+              className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
                 currentScreen === 'discover' ? 'bg-blue-50 text-[#2563eb]' : 'text-gray-600'
               }`}
             >
@@ -558,7 +574,7 @@ function AppContent() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentScreen('chat')}
-              className={`flex flex-col items-center gap-1 py-2 px-5 rounded-xl transition-colors ${
+              className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
                 currentScreen === 'chat' ? 'bg-blue-50 text-[#2563eb]' : 'text-gray-600'
               }`}
             >
@@ -577,8 +593,7 @@ function AppContent() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowSOS(true)}
-              className="flex flex-col items-center gap-1 py-2 px-5 rounded-xl text-[#ef4444]"
-            >
+              className="flex flex-col items-center gap-1 py-2 px-3 rounded-xl text-[#ef4444]">
               <div className="relative">
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
@@ -599,7 +614,7 @@ function AppContent() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentScreen('settings')}
-              className={`flex flex-col items-center gap-1 py-2 px-5 rounded-xl transition-colors ${
+              className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
                 currentScreen === 'settings' ? 'bg-blue-50 text-[#2563eb]' : 'text-gray-600'
               }`}
             >
@@ -618,7 +633,7 @@ function AppContent() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentScreen('projects')}
-              className={`flex flex-col items-center gap-1 py-2 px-5 rounded-xl transition-colors ${
+              className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
                 currentScreen === 'projects' ? 'bg-blue-50 text-[#2563eb]' : 'text-gray-600'
               }`}
             >

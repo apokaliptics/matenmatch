@@ -23,10 +23,19 @@ export function Login({ onLogin, onSwitchToSignup }: LoginProps) {
     }
   }, []);
 
+  // Persist remembered email whenever email or checkbox changes
+  useEffect(() => {
+    if (rememberMe && email) {
+      localStorage.setItem('rememberedEmail', email);
+    } else {
+      localStorage.removeItem('rememberedEmail');
+    }
+  }, [email, rememberMe]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email && password) {
-      // Save or clear remembered email
+      // Save or clear remembered email (also handled by the effect above)
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
       } else {
@@ -126,24 +135,26 @@ export function Login({ onLogin, onSwitchToSignup }: LoginProps) {
               </div>
             </div>
 
-            <div className="text-right">
-              <button type="button" className="text-[#2563eb] text-sm hover:underline">
-                {t('forgotPassword')}
-              </button>
-            </div>
+            <div className="flex items-center justify-between">
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 text-[#2563eb] border-gray-300 rounded focus:ring-2 focus:ring-[#2563eb]"
+                />
+                <label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
+                  {t('rememberMe')}
+                </label>
+              </div>
 
-            {/* Remember Me Checkbox */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-[#2563eb] border-gray-300 rounded focus:ring-2 focus:ring-[#2563eb]"
-              />
-              <label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
-                {t('rememberMe')}
-              </label>
+              <div>
+                <button type="button" className="text-[#2563eb] text-sm hover:underline">
+                  {t('forgotPassword')}
+                </button>
+              </div>
             </div>
 
             <motion.button
